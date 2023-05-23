@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="jumbotron text-center">
+    <h3>create drafts here.</h3>
+    {% if request.user.is_authenticated %}
+    <p>welcome back {{ request.user.username }}</p>
+    {% endif %}
+    <P>after 5 drafts, you gotta pay a little dawg.</P>
+</div>
+{% endblock body %}

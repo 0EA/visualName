@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h3>Dataset Drafts</h3>
+<hr>
+<a class="btn btn-danger" href="{% url 'drafts:addDataset' %}">Add Dataset Draft</a>
+<small style="margin-left: 20px">You have {{left}} draft rights left.</small>
+<hr>
+
+{% if drafts %}
+<table class="table table-dark">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Title</th>
+        <th scope="col">Creator</th>
+        <th scope="col">Created Date</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for draft in drafts %}
+        <tr>
+          <th scope="row">{{draft.id}}</th>
+          <td><a href="{% url 'drafts:updateDatasetDraft' draft.id %}">{{draft.title}}</a></td>
+          <td>{{draft.creator}}</td>
+          <td>{{draft.created_date}}</td>
+          <td><a href="{% url 'drafts:downloadDatasetDraft' draft.id %}" class="btn btn-info">Download</a></td>
+          <td><a href="{% url 'drafts:updateDatasetDraft' draft.id %}" class="btn btn-warning">Update</a></td>
+          <td><a href="{% url 'drafts:deleteDatasetDraft' draft.id %}" class="btn btn-danger">Delete</a></td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+<div class="alert alert-danger">You dont have any drafts yet.</div>
+{% endif %}
+
+
+{% endblock body %}
