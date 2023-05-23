@@ -77,10 +77,23 @@ def updateDataset(request, id):
     return render(request, "updateDatasetDraft.html", context)
 
 
-def generate_graph(id):
+def generate_graph(request, id):
     draft = DraftDataset.objects.get(id=id)
     file = draft.file
+    url = draft.file_link
+    if file and url:
+        messages.info(request, "File and Url supplied at the same time.")
+        return redirect("drafts:datasetDraft")
 
+    if file:
+        # Read the CSV file with a header row
+        data = pd.read_csv(file)
+    elif url:
+        try:
+            data = pd.read_csv(url)
+        except:
+            messages.info(request, "Incorrect data format.")
+            return redirect("drafts:datasetDraft")
     #graph properties
     date=draft.created_date
     graph_color = draft.graph_color
@@ -93,8 +106,7 @@ def generate_graph(id):
     y_label = draft.y_label
     z_label = draft.z_label
 
-    # Read the CSV file with a header row
-    data = pd.read_csv(file)
+
 
     matplotlib.use('agg') #set matplotlib background mode
 
@@ -162,7 +174,11 @@ def generate_graph(id):
 
 @login_required(login_url="user:login")
 def downloadDataset(request, id):
-    return generate_graph(id)
+    try:
+        return generate_graph(request,id)
+    except:
+        messages.info(request, "Incorrect draft format.")
+        return redirect("drafts:datasetDraft")
 
 
 @login_required(login_url="user:login")
@@ -237,7 +253,6 @@ def generateFuncGraph(id):
     title_color = draft.title_color
 
     equation = draft.equation
-    range_of_function = draft.range_of_func
     line_type = draft.line_type
 
     # Create a lambda function
@@ -247,13 +262,15 @@ def generateFuncGraph(id):
     X, Y = np.meshgrid(x, y)  # Create a grid of points
     Z = f(X, Y)  # Evaluate the function for each point
 
+
+
     #bg mode
     matplotlib.use('agg')
 
     #Create a 3D plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.plot_surface(X, Y, Z, cmap='viridis')  # Use plot_surface for surface plots or scatter for scattered points
+    ax.plot_surface(X, Y, Z, cmap='viridis',linestyle=line_type)  # Use plot_surface for surface plots or scatter for scattered points
 
     #Set labels and title
     ax.set_xlabel('x')
@@ -261,6 +278,12 @@ def generateFuncGraph(id):
     ax.set_zlabel('z')
     ax.set_title(title, fontsize=title_fontsize, color=title_color)
     ax.tick_params(color=graph_color, labelcolor=graph_color)
+
+    range_list = eval(draft.range_of_func)
+    #set graph limits (currently disable because it messes with graphs.)
+    #ax.set_xlim(range_list[0][0], range_list[0][1])
+    #ax.set_ylim(range_list[1][0], range_list[1][1])
+    #ax.set_zlim(range_list[2][0], range_list[2][1])
 
     # Save the plot as an image file
     buffer = BytesIO()
@@ -276,6 +299,11 @@ def generateFuncGraph(id):
 
 @login_required(login_url="user:login")
 def downloadFunc(request, id):
-    return generateFuncGraph(id)
+    try:
+        result = generateFuncGraph(id)
+        return result 
+    except:
+        messages.info(request, "Incorrect draft format. Check function syntax.")
+        return redirect("drafts:funcDraft")
 
 

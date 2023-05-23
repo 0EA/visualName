@@ -31,7 +31,7 @@ class DraftFunc(models.Model):
     title_color = ColorField(default='#000000')
 
     equation = models.CharField(max_length=50, verbose_name='Equation in terms of x,y and z (function should be given in python math syntax, ex: x**2+y**2)')
-    range_of_func = models.CharField(max_length=50)
+    range_of_func = models.CharField(default="[(-10, 10), (-10, 10), (-10, 10)]",max_length=50, verbose_name="supply in the format of 3 tuples inside one list: [(x_min,x_max), (y_min,y_max), (z_min,z_max)]")
     color = ColorField(default='#000000')
     line_type_choices = [
         ('dashed','DASHED'),
