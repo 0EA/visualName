@@ -25,3 +25,6 @@ Run the server:
 ```
 python manage.py runserver
 ```
+## Website
+The project is actually running on a free server right now link:
+ **_http://63x.pythonanywhere.com/_**
