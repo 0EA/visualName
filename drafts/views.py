@@ -12,6 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from io import BytesIO
 import numpy as np
+import requests
 
 #index
 def index(request):
@@ -92,9 +93,10 @@ def generate_graph(request, id):
     if file:
         # Read the CSV file with a header row
         data = pd.read_csv(file)
+ 
     elif url:
         try:
-            data = pd.read_csv(url)
+            data=pd.read_csv(url)
         except:
             messages.info(request, "Incorrect data format.")
             return redirect("drafts:datasetDraft")
@@ -172,7 +174,7 @@ def generate_graph(request, id):
         plt.close(fig)  # Close the figure to free up memory
         return response
     else:
-        messages.error(request, "The file provided in the draft does not have 2 or 3 columns.")
+        messages.info(request, "The file provided in the draft does not have the correct format.")
         return redirect("drafts:datasetDraft")
 
 #download view
@@ -220,7 +222,6 @@ def addFunc(request):
         messages.warning(request, "You dont have any draft rights left!")
         return redirect("drafts:datasetDraft")
 
-    print(draft_right_left)
     return render(request, "func/addFunc.html", context)
 
 #delete function draft

@@ -8,7 +8,7 @@ class DraftDataset(models.Model):
     creator = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     file = models.FileField(blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['csv', 'xslsx'])], upload_to="datasets/")
-    file_link = models.CharField(max_length=100, verbose_name='File link(if the file is not uploaded)', blank=True, null=True)
+    file_link = models.CharField(max_length=300, verbose_name='File link(if the file is not uploaded)', blank=True, null=True)
 
     title = models.CharField(max_length=50)
     title_fontsize = models.IntegerField(default=13)
