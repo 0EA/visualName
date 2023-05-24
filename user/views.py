@@ -3,6 +3,7 @@ from .forms import RegisterForm, LoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from .models import Profile
 # Create your views here.
 def register(request):
     if request.method == "POST":
@@ -14,6 +15,10 @@ def register(request):
             newUser = User(username=username)
             newUser.set_password(password)
             newUser.save()
+
+            profile = Profile(user=newUser)
+            profile.save()
+
             login(request, newUser)
             messages.success(request, "You have successfully registered.")
             return redirect("index")
