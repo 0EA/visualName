@@ -13,11 +13,11 @@ import matplotlib
 from io import BytesIO
 import numpy as np
 
-# Create your views here.
-
+#index
 def index(request):
  return render(request, "index.html")
 
+#dataset drafts page
 @login_required(login_url="user:login")
 def datasetDraft(request):
     datasetDrafts = DraftDataset.objects.filter(creator = request.user)
@@ -27,9 +27,11 @@ def datasetDraft(request):
         "drafts":datasetDrafts,
         "left":draft_right_left
     }
-
+    if draft_right_left <=0:
+        messages.warning(request, "Contact n.erenacar13@gmail.com in order to buy more draft rights.")
     return render(request, "datasetDraft.html", context=context)
 
+#adding new dataset draft
 @login_required(login_url="user:login")
 def addDataset(request):
     form = DatasetForm(request.POST or None, request.FILES or None)
@@ -54,6 +56,7 @@ def addDataset(request):
     print(draft_right_left)
     return render(request, "addDataset.html", context)
 
+#delete dataset draft
 @login_required(login_url="user:login")
 def deleteDataset(request, id):
     draft = get_object_or_404(DraftDataset, id=id)
@@ -61,6 +64,7 @@ def deleteDataset(request, id):
     messages.success(request, "Draft Successfully deleted.")
     return redirect("drafts:datasetDraft")
 
+#update dataset draft
 @login_required(login_url="user:login")
 def updateDataset(request, id):
     draft = get_object_or_404(DraftDataset, id=id)
@@ -76,7 +80,7 @@ def updateDataset(request, id):
     }
     return render(request, "updateDatasetDraft.html", context)
 
-
+#function generating the graph for 2d, 3d datasets and returning file response
 def generate_graph(request, id):
     draft = DraftDataset.objects.get(id=id)
     file = draft.file
@@ -171,7 +175,7 @@ def generate_graph(request, id):
         messages.error(request, "The file provided in the draft does not have 2 or 3 columns.")
         return redirect("drafts:datasetDraft")
 
-
+#download view
 @login_required(login_url="user:login")
 def downloadDataset(request, id):
     try:
@@ -180,7 +184,7 @@ def downloadDataset(request, id):
         messages.info(request, "Incorrect draft format.")
         return redirect("drafts:datasetDraft")
 
-
+#function drafts page
 @login_required(login_url="user:login")
 def funcDraft(request):
     profile = Profile.objects.filter(user=request.user).first()
@@ -190,10 +194,11 @@ def funcDraft(request):
         "drafts":funcDrafts,
         "left":draft_right_left
     }
-
+    if draft_right_left <=0:
+        messages.warning(request, "Contact n.erenacar13@gmail.com in order to buy more draft rights.")
     return render(request, "func/funcDraft.html", context=context)
 
-    
+#adding new function draft
 @login_required(login_url="user:login")
 def addFunc(request):
     form = FuncForm(request.POST or None)
@@ -218,6 +223,7 @@ def addFunc(request):
     print(draft_right_left)
     return render(request, "func/addFunc.html", context)
 
+#delete function draft
 @login_required(login_url="user:login")
 def deleteFunc(request, id):
     draft = get_object_or_404(DraftFunc, id=id)
@@ -225,6 +231,7 @@ def deleteFunc(request, id):
     messages.success(request, "Draft Successfully deleted.")
     return redirect("drafts:funcDraft")
 
+#updating function draft
 @login_required(login_url="user:login")
 def updateFunc(request, id):
     draft = get_object_or_404(DraftFunc, id=id)
@@ -240,7 +247,7 @@ def updateFunc(request, id):
     }
     return render(request, "func/updateFuncDraft.html", context)
 
-
+#creating graph from the given function and returning file response
 def generateFuncGraph(id):
     draft = DraftFunc.objects.get(id=id)
 
@@ -262,8 +269,6 @@ def generateFuncGraph(id):
     X, Y = np.meshgrid(x, y)  # Create a grid of points
     Z = f(X, Y)  # Evaluate the function for each point
 
-
-
     #bg mode
     matplotlib.use('agg')
 
@@ -280,7 +285,7 @@ def generateFuncGraph(id):
     ax.tick_params(color=graph_color, labelcolor=graph_color)
 
     range_list = eval(draft.range_of_func)
-    #set graph limits (currently disable because it messes with graphs.)
+    #set graph limits (currently disabled because it messes with graphs.)
     #ax.set_xlim(range_list[0][0], range_list[0][1])
     #ax.set_ylim(range_list[1][0], range_list[1][1])
     #ax.set_zlim(range_list[2][0], range_list[2][1])
@@ -297,6 +302,7 @@ def generateFuncGraph(id):
     plt.close(fig)  # Close the figure to free up memory
     return response
 
+#download function graph
 @login_required(login_url="user:login")
 def downloadFunc(request, id):
     try:
@@ -305,5 +311,3 @@ def downloadFunc(request, id):
     except:
         messages.info(request, "Incorrect draft format. Check function syntax.")
         return redirect("drafts:funcDraft")
-
-

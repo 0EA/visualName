@@ -9,11 +9,12 @@ class DraftDataset(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     file = models.FileField(blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['csv', 'xslsx'])], upload_to="datasets/")
     file_link = models.CharField(max_length=100, verbose_name='File link(if the file is not uploaded)', blank=True, null=True)
-    graph_color = ColorField(default='#000000')
 
     title = models.CharField(max_length=50)
     title_fontsize = models.IntegerField(default=13)
     title_color = ColorField(default='#000000')
+
+    graph_color = ColorField(default='#000000')
 
     x_label = models.CharField(max_length=50, default='x')
     y_label = models.CharField(max_length=50, default='y')
